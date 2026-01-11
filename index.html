@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, PenTool, ShoppingBag, Users, Clock, ChevronDown, ChevronRight, Eye, Star } from 'lucide-react';
+import { BookOpen, PenTool, ShoppingBag, Users, Clock, ChevronDown, ChevronRight, Eye, Moon, Sun } from 'lucide-react';
 
 // --- 資料區：單字庫 ---
 const wordBanks = [
@@ -157,6 +157,7 @@ export default function CompositionApp() {
   const [showWordBank, setShowWordBank] = useState(true);
   const [showSample, setShowSample] = useState(false);
   const [sampleLevel, setSampleLevel] = useState('basic'); // 'basic' | 'advanced'
+  const [darkMode, setDarkMode] = useState(false);
 
   const currentTopic = topics.find(t => t.id === currentTopicId);
 
@@ -172,13 +173,35 @@ export default function CompositionApp() {
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
+  // GitHub Theme Colors
+  // Light: bg-gray-50, text-gray-800, border-gray-200, card-white
+  // Dark: bg-[#0d1117] (main), bg-[#161b22] (card), border-[#30363d], text-[#c9d1d9]
+  
+  const theme = {
+    bg: darkMode ? 'bg-[#0d1117]' : 'bg-gray-50',
+    text: darkMode ? 'text-[#c9d1d9]' : 'text-gray-800',
+    cardBg: darkMode ? 'bg-[#161b22]' : 'bg-white',
+    cardBorder: darkMode ? 'border-[#30363d]' : 'border-gray-200',
+    inputBg: darkMode ? 'bg-[#0d1117]' : 'bg-white',
+    inputBorder: darkMode ? 'border-[#30363d] focus:border-[#58a6ff]' : 'border-gray-300 focus:ring-blue-400',
+    heading: darkMode ? 'text-white' : 'text-blue-800',
+    subtext: darkMode ? 'text-gray-400' : 'text-gray-600',
+    accentBg: darkMode ? 'bg-[#1f6feb]' : 'bg-blue-600',
+    accentText: 'text-white',
+    buttonHover: darkMode ? 'hover:bg-[#30363d]' : 'hover:bg-blue-50',
+    sampleBasicBtn: darkMode ? 'bg-[#238636] text-white border-transparent' : 'bg-orange-500 text-white shadow',
+    sampleAdvBtn: darkMode ? 'bg-[#8957e5] text-white border-transparent' : 'bg-purple-600 text-white shadow',
+    wordBankHeader: darkMode ? 'text-[#c9d1d9]' : 'text-gray-700',
+    wordBankHover: darkMode ? 'hover:bg-[#0d1117]' : 'hover:bg-gray-50',
+  };
+
   const WordBankSection = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+    <div className={`${theme.cardBg} rounded-lg shadow-sm border ${theme.cardBorder} p-4 mb-4 transition-colors duration-300`}>
       <div 
         className="flex justify-between items-center cursor-pointer mb-2"
         onClick={() => setShowWordBank(!showWordBank)}
       >
-        <h3 className="font-bold text-gray-700 flex items-center gap-2">
+        <h3 className={`font-bold ${theme.wordBankHeader} flex items-center gap-2`}>
           <BookOpen className="w-4 h-4" /> 萬用單字庫 (點擊收合)
         </h3>
         {showWordBank ? <ChevronDown className="w-4 h-4"/> : <ChevronRight className="w-4 h-4"/>}
@@ -187,13 +210,13 @@ export default function CompositionApp() {
       {showWordBank && (
         <div className="space-y-3 h-64 overflow-y-auto pr-2 custom-scrollbar">
           {wordBanks.map((bank, idx) => (
-            <div key={idx} className="border-b border-gray-100 pb-2 last:border-0">
-              <h4 className="text-sm font-semibold text-blue-600 mb-1">{bank.category}</h4>
+            <div key={idx} className={`border-b ${darkMode ? 'border-[#30363d]' : 'border-gray-100'} pb-2 last:border-0`}>
+              <h4 className={`text-sm font-semibold mb-1 ${darkMode ? 'text-[#58a6ff]' : 'text-blue-600'}`}>{bank.category}</h4>
               <div className="grid grid-cols-1 gap-1">
                 {bank.words.map((w, wIdx) => (
-                  <div key={wIdx} className="text-xs flex justify-between group hover:bg-gray-50 p-1 rounded">
-                    <span className="text-gray-800 font-medium">{w.en}</span>
-                    <span className="text-gray-500">{w.zh}</span>
+                  <div key={wIdx} className={`text-xs flex justify-between group ${theme.wordBankHover} p-1 rounded transition-colors`}>
+                    <span className={`${theme.text} font-medium`}>{w.en}</span>
+                    <span className={theme.subtext}>{w.zh}</span>
                   </div>
                 ))}
               </div>
@@ -205,11 +228,20 @@ export default function CompositionApp() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800 p-4 md:p-8">
+    <div className={`min-h-screen font-sans ${theme.bg} ${theme.text} p-4 md:p-8 transition-colors duration-300`}>
       <div className="max-w-6xl mx-auto">
-        <header className="mb-6 text-center md:text-left">
-          <h1 className="text-3xl font-bold text-blue-800 mb-2">學測英文作文：萬用模版練習神器</h1>
-          <p className="text-gray-600">選擇題目，填入關鍵字，輕鬆練習第一段與第二段寫作！</p>
+        <header className="mb-6 flex flex-col md:flex-row justify-between items-center md:items-start text-center md:text-left gap-4">
+          <div>
+            <h1 className={`text-3xl font-bold ${theme.heading} mb-2`}>學測英文作文：萬用模版練習神器</h1>
+            <p className={theme.subtext}>選擇題目，填入關鍵字，輕鬆練習第一段與第二段寫作！</p>
+          </div>
+          <button 
+            onClick={() => setDarkMode(!darkMode)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border ${theme.cardBorder} ${theme.cardBg} ${theme.text} hover:opacity-80 transition-all`}
+          >
+            {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-600" />}
+            <span className="text-sm font-medium">{darkMode ? "Light Mode" : "GitHub Dark"}</span>
+          </button>
         </header>
 
         {/* 題目選擇區 */}
@@ -220,8 +252,8 @@ export default function CompositionApp() {
               onClick={() => setCurrentTopicId(topic.id)}
               className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-all whitespace-nowrap ${
                 currentTopicId === topic.id
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-md'
-                  : 'bg-white text-gray-600 border-gray-200 hover:bg-blue-50'
+                  ? `${theme.accentBg} ${theme.accentText} border-transparent shadow-md`
+                  : `${theme.cardBg} ${theme.subtext} ${theme.cardBorder} ${theme.buttonHover}`
               }`}
             >
               {topic.icon}
@@ -234,19 +266,19 @@ export default function CompositionApp() {
           
           {/* 左側：題目資訊 + 單字庫 (佔 3/12) */}
           <div className="lg:col-span-3 space-y-4">
-            <div className="bg-blue-50 rounded-lg p-5 border border-blue-100">
-              <h2 className="font-bold text-blue-800 mb-3 text-lg flex items-center gap-2">
+            <div className={`${darkMode ? 'bg-[#1f2428] border-[#30363d]' : 'bg-blue-50 border-blue-100'} rounded-lg p-5 border`}>
+              <h2 className={`font-bold mb-3 text-lg flex items-center gap-2 ${darkMode ? 'text-[#58a6ff]' : 'text-blue-800'}`}>
                 <Clock className="w-5 h-5"/> 當前題目
               </h2>
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">{currentTopic.context}</p>
-                <div className="bg-white p-3 rounded shadow-sm border-l-4 border-blue-400">
+                <p className={`text-sm ${theme.text}`}>{currentTopic.context}</p>
+                <div className={`${theme.cardBg} p-3 rounded shadow-sm border-l-4 ${darkMode ? 'border-[#1f6feb]' : 'border-blue-400'}`}>
                   <span className="text-xs font-bold text-gray-400 uppercase">Picture A / 1</span>
-                  <p className="text-sm font-medium">{currentTopic.imgA}</p>
+                  <p className={`text-sm font-medium ${theme.text}`}>{currentTopic.imgA}</p>
                 </div>
-                <div className="bg-white p-3 rounded shadow-sm border-l-4 border-green-400">
+                <div className={`${theme.cardBg} p-3 rounded shadow-sm border-l-4 ${darkMode ? 'border-[#238636]' : 'border-green-400'}`}>
                   <span className="text-xs font-bold text-gray-400 uppercase">Picture B / 2</span>
-                  <p className="text-sm font-medium">{currentTopic.imgB}</p>
+                  <p className={`text-sm font-medium ${theme.text}`}>{currentTopic.imgB}</p>
                 </div>
               </div>
             </div>
@@ -258,10 +290,10 @@ export default function CompositionApp() {
           <div className="lg:col-span-9 space-y-6">
             
             {/* 填空練習區塊 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-               <div className="flex justify-between items-center mb-4 border-b pb-2">
-                  <h2 className="text-xl font-bold text-gray-800">✍️ 填空練習</h2>
-                  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">
+            <div className={`${theme.cardBg} rounded-xl shadow-sm border ${theme.cardBorder} p-6 transition-colors duration-300`}>
+               <div className={`flex justify-between items-center mb-4 border-b ${darkMode ? 'border-[#30363d]' : 'border-gray-200'} pb-2`}>
+                  <h2 className={`text-xl font-bold ${theme.text}`}>✍️ 填空練習</h2>
+                  <span className={`text-xs ${darkMode ? 'bg-[#0d1117] text-[#8b949e]' : 'bg-gray-100 text-gray-500'} px-2 py-1 rounded`}>
                     {currentTopic.type === 'comparison' ? '適用：二選一比較模板' : '適用：多圖/現象模板'}
                   </span>
                </div>
@@ -270,37 +302,37 @@ export default function CompositionApp() {
                 
                 {/* 第一段 */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-blue-600 bg-blue-50 inline-block px-2 py-1 rounded">第一段：現象描述</h3>
+                  <h3 className={`text-sm font-bold ${darkMode ? 'text-[#58a6ff] bg-[#0d1117] border border-[#30363d]' : 'text-blue-600 bg-blue-50'} inline-block px-2 py-1 rounded`}>第一段：現象描述</h3>
                   
                   {currentTopic.type === 'comparison' ? (
                     /* 二選一模板輸入 */
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1 md:col-span-2">
-                        <label className="text-xs font-semibold text-gray-500">主題 (Topic) - 句型：The provided pictures present a vivid contrast between two different [主題].</label>
+                        <label className={`text-xs font-semibold ${theme.subtext}`}>主題 (Topic) - 句型：The provided pictures present a vivid contrast between two different [主題].</label>
                         <input 
                           name="theme" 
                           placeholder="請輸入主題 (例如：different types of...)"
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.theme || ''}
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-semibold text-gray-500">圖 A 描述 (Description A) - 句型：In the first picture, we can see [圖A描述].</label>
+                        <label className={`text-xs font-semibold ${theme.subtext}`}>圖 A 描述 (Description A) - 句型：In the first picture, we can see [圖A描述].</label>
                         <textarea 
                           name="descA" 
                           rows="3"
                           placeholder="請描述圖 A 的內容..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.descA || ''}
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-semibold text-gray-500">圖 B 描述 (Description B) - 句型：On the other hand, the second picture depicts [圖B描述].</label>
+                        <label className={`text-xs font-semibold ${theme.subtext}`}>圖 B 描述 (Description B) - 句型：On the other hand, the second picture depicts [圖B描述].</label>
                         <textarea 
                           name="descB" 
                           rows="3"
                           placeholder="請描述圖 B 的內容..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.descB || ''}
                         />
                       </div>
@@ -309,29 +341,29 @@ export default function CompositionApp() {
                     /* 現象模板輸入 */
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1 md:col-span-2">
-                        <label className="text-xs font-semibold text-gray-500">主題 (Topic) - 句型：The picture displays a common phenomenon regarding [主題].</label>
+                        <label className={`text-xs font-semibold ${theme.subtext}`}>主題 (Topic) - 句型：The picture displays a common phenomenon regarding [主題].</label>
                         <input 
                           name="theme" 
                           placeholder="請輸入主題..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.theme || ''}
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-semibold text-gray-500">圖片 1 描述 (Description 1) - 句型：Among the examples shown, one is [圖片1描述].</label>
+                        <label className={`text-xs font-semibold ${theme.subtext}`}>圖片 1 描述 (Description 1) - 句型：Among the examples shown, one is [圖片1描述].</label>
                         <input 
                           name="desc1" 
                           placeholder="請描述第一種現象..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.desc1 || ''}
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-semibold text-gray-500">圖片 2 描述 (Description 2) - 句型：Another shows [圖片2描述].</label>
+                        <label className={`text-xs font-semibold ${theme.subtext}`}>圖片 2 描述 (Description 2) - 句型：Another shows [圖片2描述].</label>
                         <input 
                           name="desc2" 
                           placeholder="請描述第二種現象..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.desc2 || ''}
                         />
                       </div>
@@ -339,46 +371,46 @@ export default function CompositionApp() {
                   )}
                 </div>
 
-                <hr className="border-gray-100" />
+                <hr className={darkMode ? 'border-[#30363d]' : 'border-gray-100'} />
 
                 {/* 第二段 */}
                 <div className="space-y-4">
-                   <h3 className="text-sm font-bold text-green-600 bg-green-50 inline-block px-2 py-1 rounded">第二段：個人看法</h3>
+                   <h3 className={`text-sm font-bold ${darkMode ? 'text-[#238636] bg-[#0d1117] border border-[#30363d]' : 'text-green-600 bg-green-50'} inline-block px-2 py-1 rounded`}>第二段：個人看法</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1 md:col-span-2">
-                          <label className="text-xs font-semibold text-gray-500">你的選擇 (Your Preference) - 句型：From my perspective, I prefer [你的選擇].</label>
+                          <label className={`text-xs font-semibold ${theme.subtext}`}>你的選擇 (Your Preference) - 句型：From my perspective, I prefer [你的選擇].</label>
                           <input 
                           name="myChoice" 
                           placeholder="請輸入你的選擇/看法..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.myChoice || ''}
                           />
                       </div>
                       <div className="space-y-1">
-                          <label className="text-xs font-semibold text-gray-500">理由一 (Reason 1) - 句型：To begin with, [理由一].</label>
+                          <label className={`text-xs font-semibold ${theme.subtext}`}>理由一 (Reason 1) - 句型：To begin with, [理由一].</label>
                           <input 
                           name="reason1" 
                           placeholder="第一個原因..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.reason1 || ''}
                           />
                       </div>
                       <div className="space-y-1">
-                          <label className="text-xs font-semibold text-gray-500">理由二 (Reason 2) - 句型：Second, [理由二].</label>
+                          <label className={`text-xs font-semibold ${theme.subtext}`}>理由二 (Reason 2) - 句型：Second, [理由二].</label>
                           <input 
                           name="reason2" 
                           placeholder="第二個原因..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.reason2 || ''}
                           />
                       </div>
                       <div className="space-y-1 md:col-span-2">
-                          <label className="text-xs font-semibold text-gray-500">自身經驗 (Past Experience) - 句型：Speaking of my own experience, I once [自身經驗].</label>
+                          <label className={`text-xs font-semibold ${theme.subtext}`}>自身經驗 (Past Experience) - 句型：Speaking of my own experience, I once [自身經驗].</label>
                           <textarea 
                           name="experience" 
                           rows="2"
                           placeholder="請簡述你的相關經驗..."
-                          className="w-full p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none bg-gray-50 focus:bg-white"
+                          className={`w-full p-2 border rounded outline-none ${theme.inputBg} ${theme.inputBorder} ${theme.text}`}
                           onChange={handleInputChange} value={inputs.experience || ''}
                           />
                       </div>
@@ -388,15 +420,15 @@ export default function CompositionApp() {
             </div>
 
             {/* 範文參考區塊 */}
-            <div className="bg-orange-50 rounded-xl shadow-sm border border-orange-200 p-6">
+            <div className={`${darkMode ? 'bg-[#161b22] border-[#30363d]' : 'bg-orange-50 border-orange-200'} rounded-xl shadow-sm border p-6 transition-colors duration-300`}>
               <div 
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => setShowSample(!showSample)}
               >
-                <h2 className="text-xl font-bold text-orange-800 flex items-center gap-2">
+                <h2 className={`text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-[#ff7b72]' : 'text-orange-800'}`}>
                    <Eye className="w-5 h-5" /> 參考範文 (Sample Essays)
                 </h2>
-                <div className="flex items-center gap-2 text-sm text-orange-600">
+                <div className={`flex items-center gap-2 text-sm ${darkMode ? 'text-gray-400' : 'text-orange-600'}`}>
                   {showSample ? "點擊收合" : "寫完再看！點擊展開"}
                   {showSample ? <ChevronDown className="w-4 h-4"/> : <ChevronRight className="w-4 h-4"/>}
                 </div>
@@ -409,8 +441,8 @@ export default function CompositionApp() {
                       onClick={() => setSampleLevel('basic')}
                       className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
                         sampleLevel === 'basic' 
-                        ? 'bg-orange-500 text-white shadow' 
-                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-orange-100'
+                        ? theme.sampleBasicBtn
+                        : `${theme.cardBg} ${theme.subtext} border ${theme.cardBorder} hover:opacity-80`
                       }`}
                     >
                       🌱 基礎版 (Basic)
@@ -419,27 +451,27 @@ export default function CompositionApp() {
                       onClick={() => setSampleLevel('advanced')}
                       className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
                         sampleLevel === 'advanced' 
-                        ? 'bg-purple-600 text-white shadow' 
-                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-purple-50'
+                        ? theme.sampleAdvBtn
+                        : `${theme.cardBg} ${theme.subtext} border ${theme.cardBorder} hover:opacity-80`
                       }`}
                     >
                       🚀 進階版 (Advanced)
                     </button>
                   </div>
                   
-                  <div className={`bg-white p-6 rounded-lg border ${sampleLevel === 'basic' ? 'border-orange-200' : 'border-purple-200'} shadow-sm`}>
+                  <div className={`${theme.cardBg} p-6 rounded-lg border ${darkMode ? 'border-[#30363d]' : (sampleLevel === 'basic' ? 'border-orange-200' : 'border-purple-200')} shadow-sm`}>
                      <div className="mb-2 flex items-center gap-2">
                         {sampleLevel === 'basic' ? (
-                          <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded font-bold">嚴格套用模板</span>
+                          <span className={`text-xs px-2 py-1 rounded font-bold ${darkMode ? 'bg-[#238636] text-white' : 'bg-orange-100 text-orange-800'}`}>嚴格套用模板</span>
                         ) : (
-                          <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded font-bold">靈活句型變化</span>
+                          <span className={`text-xs px-2 py-1 rounded font-bold ${darkMode ? 'bg-[#8957e5] text-white' : 'bg-purple-100 text-purple-800'}`}>靈活句型變化</span>
                         )}
                      </div>
-                     <p className="whitespace-pre-wrap leading-relaxed text-gray-800 font-serif text-lg">
+                     <p className={`whitespace-pre-wrap leading-relaxed font-serif text-lg ${theme.text}`}>
                        {sampleLevel === 'basic' ? currentTopic.sampleBasic : currentTopic.sampleAdvanced}
                      </p>
                   </div>
-                  <p className="text-center text-gray-400 text-xs mt-3">
+                  <p className={`text-center text-xs mt-3 ${theme.subtext}`}>
                     * 建議先嘗試自己寫，再對照範文學習 *
                   </p>
                 </div>
