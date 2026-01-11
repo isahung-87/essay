@@ -1,5 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, PenTool, ShoppingBag, Users, Clock, ChevronDown, ChevronRight, Eye, Moon, Sun } from 'lucide-react';
+
+// --- 內建圖示元件 (移除外部依賴 lucide-react，直接內嵌 SVG) ---
+const Icons = {
+  BookOpen: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+    </svg>
+  ),
+  PenTool: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/>
+    </svg>
+  ),
+  ShoppingBag: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+  ),
+  Clock: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </svg>
+  ),
+  Users: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  ),
+  ChevronDown: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  ),
+  ChevronRight: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>
+  ),
+  Eye: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+  ),
+  Moon: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  ),
+  Sun: (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+  )
+};
 
 // --- 資料區：單字庫 ---
 const wordBanks = [
@@ -76,7 +129,7 @@ const topics = [
   {
     id: 1,
     title: "筆記方式 (Note-taking)",
-    icon: <PenTool className="w-5 h-5" />,
+    icon: <Icons.PenTool className="w-5 h-5" />,
     type: "comparison",
     context: "科技進步，學生做筆記的方式也改變了。",
     imgA: "手寫筆記 (Handwritten notes) - 印象深但慢",
@@ -91,7 +144,7 @@ From my perspective, I prefer digital note-taking for its efficiency. The reason
   {
     id: 2,
     title: "購物習慣 (Shopping)",
-    icon: <ShoppingBag className="w-5 h-5" />,
+    icon: <Icons.ShoppingBag className="w-5 h-5" />,
     type: "comparison",
     context: "你要買一件新外套，你會去哪裡買？",
     imgA: "實體店面 (Physical Store) - 可試穿、立即拿",
@@ -106,7 +159,7 @@ From my perspective, I prefer online shopping. The reasons can be summarized as 
   {
     id: 3,
     title: "運動場域 (Exercise)",
-    icon: <Clock className="w-5 h-5" />,
+    icon: <Icons.Clock className="w-5 h-5" />,
     type: "comparison",
     context: "保持健康很重要，但場地選擇各有優缺。",
     imgA: "戶外慢跑 (Outdoor Jogging) - 風景好、空氣佳",
@@ -121,7 +174,7 @@ From my perspective, I prefer outdoor jogging. The reasons can be summarized as 
   {
     id: 4,
     title: "讀書模式 (Study Mode)",
-    icon: <Users className="w-5 h-5" />,
+    icon: <Icons.Users className="w-5 h-5" />,
     type: "comparison",
     context: "圖書館裡常見的兩種景象。",
     imgA: "獨自苦讀 (Studying Alone) - 安靜、專注",
@@ -136,7 +189,7 @@ From my perspective, I prefer studying alone. The reasons can be summarized as f
   {
     id: 5,
     title: "高中生的壓力 (Pressure)",
-    icon: <BookOpen className="w-5 h-5" />,
+    icon: <Icons.BookOpen className="w-5 h-5" />,
     type: "phenomenon",
     context: "高中生面臨各種壓力來源。",
     imgA: "堆積如山的考卷 (Academic Pressure)",
@@ -202,9 +255,9 @@ export default function CompositionApp() {
         onClick={() => setShowWordBank(!showWordBank)}
       >
         <h3 className={`font-bold ${theme.wordBankHeader} flex items-center gap-2`}>
-          <BookOpen className="w-4 h-4" /> 萬用單字庫 (點擊收合)
+          <Icons.BookOpen className="w-4 h-4" /> 萬用單字庫 (點擊收合)
         </h3>
-        {showWordBank ? <ChevronDown className="w-4 h-4"/> : <ChevronRight className="w-4 h-4"/>}
+        {showWordBank ? <Icons.ChevronDown className="w-4 h-4"/> : <Icons.ChevronRight className="w-4 h-4"/>}
       </div>
       
       {showWordBank && (
@@ -239,7 +292,7 @@ export default function CompositionApp() {
             onClick={() => setDarkMode(!darkMode)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full border ${theme.cardBorder} ${theme.cardBg} ${theme.text} hover:opacity-80 transition-all`}
           >
-            {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-600" />}
+            {darkMode ? <Icons.Sun className="w-4 h-4 text-yellow-400" /> : <Icons.Moon className="w-4 h-4 text-gray-600" />}
             <span className="text-sm font-medium">{darkMode ? "Light Mode" : "GitHub Dark"}</span>
           </button>
         </header>
@@ -268,7 +321,7 @@ export default function CompositionApp() {
           <div className="lg:col-span-3 space-y-4">
             <div className={`${darkMode ? 'bg-[#1f2428] border-[#30363d]' : 'bg-blue-50 border-blue-100'} rounded-lg p-5 border`}>
               <h2 className={`font-bold mb-3 text-lg flex items-center gap-2 ${darkMode ? 'text-[#58a6ff]' : 'text-blue-800'}`}>
-                <Clock className="w-5 h-5"/> 當前題目
+                <Icons.Clock className="w-5 h-5"/> 當前題目
               </h2>
               <div className="space-y-4">
                 <p className={`text-sm ${theme.text}`}>{currentTopic.context}</p>
@@ -426,11 +479,11 @@ export default function CompositionApp() {
                 onClick={() => setShowSample(!showSample)}
               >
                 <h2 className={`text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-[#ff7b72]' : 'text-orange-800'}`}>
-                   <Eye className="w-5 h-5" /> 參考範文 (Sample Essays)
+                   <Icons.Eye className="w-5 h-5" /> 參考範文 (Sample Essays)
                 </h2>
                 <div className={`flex items-center gap-2 text-sm ${darkMode ? 'text-gray-400' : 'text-orange-600'}`}>
                   {showSample ? "點擊收合" : "寫完再看！點擊展開"}
-                  {showSample ? <ChevronDown className="w-4 h-4"/> : <ChevronRight className="w-4 h-4"/>}
+                  {showSample ? <Icons.ChevronDown className="w-4 h-4"/> : <Icons.ChevronRight className="w-4 h-4"/>}
                 </div>
               </div>
 
